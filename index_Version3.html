@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>For My CupCake 💖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700;900&family=Dancing+Script:wght@700&display=swap');
+        :root {
+            --bg: #08080a;
+            --pink: #ff2d75;
+            --pink-glow: rgba(255, 45, 117, 0.5);
+            --purple: #9d4edd;
+            --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.07);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            background: radial-gradient(circle at center, #1a0b12 0%, #08080a 100%);
+        }
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        #app {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            width: 100%;
+        }
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            text-align: center;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .screen.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.2rem;
+            background: linear-gradient(to right, #ff2d75, #ff8fa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px var(--pink-glow));
+        }
+        .tagline {
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 30px 20px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        .hub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .hub-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .hub-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        .hub-item:hover::before {
+            left: 100%;
+        }
+        .hub-item:hover {
+            background: rgba(255, 45, 117, 0.1);
+            border: 1px solid rgba(255, 45, 117, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 45, 117, 0.15);
+        }
+        .hub-item:active {
+            background: var(--pink-glow);
+            transform: scale(0.95) translateY(-5px);
+        }
+        .icon-svg {
+            width: 35px;
+            height: 35px;
+            fill: none;
+            stroke: var(--pink);
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 5px var(--pink));
+        }
+        .hub-item span {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            color: #bbb;
+        }
+        .btn-CupCake {
+            background: linear-gradient(45deg, var(--pink), var(--purple));
+            color: white;
+            border: none;
+            padding: 16px 35px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 20px var(--pink-glow);
+            margin-top: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-CupCake::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+        .btn-CupCake:hover::before {
+            left: 100%;
+        }
+        .btn-CupCake:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px var(--pink-glow);
+        }
+        .btn-CupCake:active {
+            transform: scale(0.95) translateY(-3px);
+        }
+        .click-word {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--pink);
+            text-shadow: 0 0 10px var(--pink);
+            animation: floatUp 1.2s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                filter: hue-rotate(180deg);
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+                filter: hue-rotate(360deg);
+            }
+        }
+        .music-box {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--glass);
+            padding: 10px 15px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .viz-bar {
+            width: 3px;
+            height: 12px;
+            background: var(--pink);
+            border-radius: 10px;
+        }
+        .playing .viz-bar {
+            animation: bounce 0.6s infinite alternate;
+        }
+        @keyframes bounce {
+            from {
+                height: 4px;
+            }
+            to {
+                height: 16px;
+            }
+        }
+        .message-box {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #ddd;
+            min-height: 120px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .message-box p {
+            margin: 10px 0;
+        }
+        #no-btn {
+            position: absolute;
+            background: #222;
+            color: #777;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.1s;
+        }
+        @media (min-width: 768px) {
+            body {
+                overflow: auto;
+            }
+            .screen {
+                padding: 50px;
+            }
+            h1 {
+                font-size: 4rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .glass-card {
+                max-width: 500px;
+                padding: 40px 30px;
+            }
+            .hub-grid {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 800px;
+                gap: 20px;
+            }
+            .hub-item {
+                padding: 25px 15px;
+            }
+            .message-box {
+                min-height: 200px;
+                font-size: 1.2rem;
+            }
+            .music-box {
+                top: 40px;
+                right: 40px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .screen {
+                padding: 80px;
+            }
+            h1 {
+                font-size: 5rem;
+            }
+            .hub-grid {
+                max-width: 1000px;
+            }
+        }
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            color: var(--pink);
+            font-size: 1.5rem;
+            font-weight: 900;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 10px var(--pink-glow);
+        }
+    </style>
+</head>
+<body onclick="handleTap(event)">
+    <canvas id="heartCanvas"></canvas>
+    <div class="music-box" id="musicToggle" onclick="toggleMusic()">
+        <div style="display: flex; gap: 3px; align-items: flex-end; height: 16px;">
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+        </div>
+        <span style="font-size: 0.6rem; font-weight: 800; color: var(--pink);">MUSIC</span>
+    </div>
+    <audio id="bgSong" preload="metadata" loop playsinline crossorigin="anonymous">
+        <source src="Kesariya.mp4" type="audio/mp4">
+    </audio>
+    <div id="app">
+        <section class="screen active" id="p1">
+            <svg class="icon-svg" style="width: 60px; height: 60px;" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
+            </svg>
+            <h1>Happy Birthday<br>CupCake</h1>
+            <button class="btn-CupCake" onclick="nav(2)">Open My Heart ✨</button>
+        </section>
+        <section class="screen" id="p2">
+            <div class="back-btn" onclick="nav(1)">‹</div>
+            <h2 style="font-size: 1rem; letter-spacing: 3px; color: #888;">SELECT A GIFT</h2>
+            <div class="hub-grid">
+                <div class="hub-item" onclick="openMsg('love')">
+                    <svg class="icon-svg" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span>LOVE NOTE</span>
+                </div>
+                <div class="hub-item" onclick="openMsg('CupCake')">
+                    <svg class="icon-svg" viewBox="0 0 24 24" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+                    </svg>
+                    <span>CupCake MSG</span>
+                </div>
+                <div class="hub-item" onclick="openMsg('secret')">
+                    <svg class="icon-svg" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                    <span>SECRET</span>
+                </div>
+                <div class="hub-item" onclick="openMsg('future')">
+                    <svg class="icon-svg" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M5 3l14 9-14 9V3z" />
+                    </svg>
+                    <span>OUR FUTURE</span>
+                </div>
+            </div>
+            <button class="btn-CupCake" style="width: 100%;" onclick="nav(4)">One Last Surprise →</button>
+        </section>
+        <section class="screen" id="p3">
+            <div class="glass-card">
+                <div id="typewriter" class="message-box"></div>
+                <button class="btn-CupCake" onclick="nav(2)">Back to Hub</button>
+            </div>
+        </section>
+        <section class="screen" id="p4">
+            <h1 style="font-size: 5rem;">🥺</h1>
+            <h2 class="tagline">Final Question</h2>
+            <p style="font-weight: 700; font-size: 1.5rem;">Do you love me?</p>
+            <div style="height: 150px; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; gap: 20px;">
+                <button class="btn-CupCake" style="background: #00ff88; box-shadow: 0 0 20px rgba(0,255,136,0.3);" onclick="celebrate()">YES!</button>
+                <button id="no-btn">NO</button>
+            </div>
+        </section>
+        <section class="screen" id="p5">
+            <div class="glass-card" style="border: 2px solid var(--pink); max-width: 600px;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Happy Birthday! 🎂</h1>
+                <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; margin-bottom: 20px; text-align: left; max-height: 50vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.06);">
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        <span style="font-size: 1.3rem; font-weight: bold; color: var(--pink);">My Dearest,</span><br><br>
+                        You make my world brighter just by being in it, and I feel so lucky to call you mine. On your special day, I just want you to know how deeply loved, appreciated, and cherished you are.<br><br>
+                        Your smile makes my heart happy, your care makes me stronger, and your presence makes my life beautiful. Happy Birthday, my love! May this year bring you endless happiness, dreams come true, and everything your heart desires. <br><br>
+                        I promise to keep loving you, supporting you, and making memories with you always. 💫🎂💝
+                    </p>
+                </div>
+                <div style="padding: 15px; border: 1px dashed var(--pink); border-radius: 15px; background: rgba(255,45,117,0.1); margin-top: 15px;">
+                    <p style="font-size: 0.7rem; letter-spacing: 2px; color: var(--pink); font-weight: 800;">REDEEMABLE VOUCHER</p>
+                    <p style="font-family: 'Dancing Script'; font-size: 1.5rem; margin-top: 5px; color: #fff;">1000 Infinite Forehead Kisses 💋</p>
+                </div>
+                <button class="btn-CupCake" onclick="nav(1)">Start Again ↺</button>
+            </div>
+        </section>
+    </div>
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = resize;
+        resize();
+        class Heart {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 3 + 1;
+                this.speed = Math.random() * 1 + 0.5;
+                this.opacity = Math.random() * 0.4;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -10) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 45, 117, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        for (let i = 0; i < 40; i++) hearts.push(new Heart());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(h => { h.update(); h.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+        function nav(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`p${n}`).classList.add('active');
+        }
+        const words = ["I Love You", "CupCake", "Forever Yours", "So Cute", "My Heart", "Always", "Adore", "Treasure", "Cherish", "Beloved", "Sweet", "Angel", "Darling", "Precious", "Mine"];
+        function handleTap(e) {
+            const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            if (!x || !y) return;
+            const span = document.createElement('span');
+            span.className = 'click-word';
+            span.innerText = words[Math.floor(Math.random() * words.length)];
+            span.style.left = `${x}px`;
+            span.style.top = `${y}px`;
+            document.body.appendChild(span);
+            setTimeout(() => span.remove(), 1200);
+        }
+        const content = {
+            love: "You make my world brighter just by being in it, and I feel so lucky to call you mine. On your special day, know how deeply you are loved.",
+            CupCake: "Your smile makes my heart happy, your care makes me stronger, and your presence makes my life beautiful. Happy Birthday, CupCake!",
+            secret: "The secret is... even after all this time, I still get butterflies every time I see your name on my phone. 💖",
+            future: "I promise to keep loving you, supporting you, and making memories with you always. To many more birthdays together!"
+        };
+        let typeTimeout;
+        function openMsg(key) {
+            nav(3);
+            const el = document.getElementById('typewriter');
+            if (typeTimeout) clearTimeout(typeTimeout);
+            el.innerHTML = "";
+            let text = content[key];
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    typeTimeout = setTimeout(type, 30);
+                }
+            }
+            typeTimeout = setTimeout(type, 300);
+        }
+        const noBtn = document.getElementById('no-btn');
+        const moveNo = () => {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        };
+        noBtn.addEventListener('mouseover', moveNo);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
+        function celebrate() {
+            nav(5);
+        }
+        let playing = false;
+        let mutedAutoplay = false;
+        const bgSong = document.getElementById('bgSong');
+        const musicToggleEl = document.getElementById('musicToggle');
+        function safeSeek(seconds) {
+            if (isFinite(bgSong.duration) && bgSong.duration > 0) {
+                const target = Math.min(seconds, Math.max(0, bgSong.duration - 0.1));
+                try { bgSong.currentTime = target; } catch (e) {}
+            } else {
+                try { bgSong.currentTime = seconds; } catch (e) {}
+            }
+        }
+        function fadeVolume(from, to, duration = 1500) {
+            bgSong.volume = from;
+            const start = performance.now();
+            function step(now) {
+                const t = Math.min(1, (now - start) / duration);
+                bgSong.volume = from + (to - from) * t;
+                if (t < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+        function tryPlayUnmuted() {
+            bgSong.muted = false;
+            return bgSong.play();
+        }
+        function tryPlayMuted() {
+            bgSong.muted = true;
+            return bgSong.play();
+        }
+        function playFrom(seconds = 20) {
+            function doPlay() {
+                safeSeek(seconds);
+                return tryPlayUnmuted().then(() => {
+                    playing = true;
+                    mutedAutoplay = false;
+                    if (musicToggleEl) musicToggleEl.classList.add('playing');
+                    fadeVolume(0, 1, 600);
+                }).catch(() => {
+                    return tryPlayMuted().then(() => {
+                        playing = true;
+                        mutedAutoplay = true;
+                        if (musicToggleEl) musicToggleEl.classList.add('playing');
+                        const onFirstGesture = () => {
+                            bgSong.muted = false;
+                            mutedAutoplay = false;
+                            fadeVolume(0, 1, 800);
+                        };
+                        document.addEventListener('click', onFirstGesture, { once: true });
+                        document.addEventListener('touchstart', onFirstGesture, { once: true });
+                    }).catch(() => {
+                        const startOnGesture = () => {
+                            safeSeek(seconds);
+                            tryPlayUnmuted().then(() => {
+                                playing = true;
+                                if (musicToggleEl) musicToggleEl.classList.add('playing');
+                            }).catch(err => {
+                                console.log('Play after gesture still failed:', err);
+                            });
+                        };
+                        document.addEventListener('click', startOnGesture, { once: true });
+                        document.addEventListener('touchstart', startOnGesture, { once: true });
+                    });
+                });
+            }
+            if (bgSong.readyState > 0) {
+                doPlay();
+            } else {
+                bgSong.addEventListener('loadedmetadata', doPlay, { once: true });
+                bgSong.load();
+            }
+        }
+        window.addEventListener('load', () => {
+            playFrom(20);
+        });
+        function toggleMusic() {
+            if (!playing) {
+                playFrom(20);
+            } else {
+                try { bgSong.pause(); } catch (e) {}
+                playing = false;
+                if (musicToggleEl) musicToggleEl.classList.remove('playing');
+            }
+        }
+        window.toggleMusic = toggleMusic;
+    </script>
+</body>
+</html>
